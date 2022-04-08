@@ -144,7 +144,7 @@ CREATE TABLE `employee_hobby` (
 	POWER	
 	SELECT POW(E.id,2) AS POWER FROM employee.employee E;
 	
-	
+	Continue 
 
 	/* table column name change	*/
 	ALTER TABLE employee.employee_salary CHANGE Date date DATE NOT NULL;
