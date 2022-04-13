@@ -1,7 +1,7 @@
-
+/*Practical 26 Queries*/
 	
-	/*Practical 26 Queries*/
-	CREATE TABLE `employee` (
+/*Employee details table*/
+CREATE TABLE `employee` (
   `id` int NOT NULL AUTO_INCREMENT,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
@@ -9,147 +9,151 @@
   `mobile_number` varchar(45) DEFAULT NULL,
   `address` varchar(45) DEFAULT NULL,
   `email_address` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `EMAIL_INDEX` (`email_address`)
 ) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
+/*Employee salary details table*/
 CREATE TABLE `employee_salary` (
   `id` int NOT NULL AUTO_INCREMENT,
   `salary` int DEFAULT NULL,
-  `employee_id` int NOT NULL,
+  `fk_employee_id` int NOT NULL,
   `date` date NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `employee_id` (`employee_id`) /*!80000 INVISIBLE */,
-  CONSTRAINT `employee_id` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`)
+  KEY `employee_id` (`fk_employee_id`) /*!80000 INVISIBLE */,
+  CONSTRAINT `employee_id` FOREIGN KEY (`fk_employee_id`) REFERENCES `employee` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
+/*Hobby list table*/
 CREATE TABLE `hobby` (
   `id` int NOT NULL AUTO_INCREMENT,
   `hobby_name` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
+/*table those employee has hobbies, individual has more than one hobbies*/
 CREATE TABLE `employee_hobby` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `employee_id` int NOT NULL,
-  `hobby_id` int NOT NULL,
+  `fk_employee_id` int DEFAULT NULL,
+  `fk_hobby_id` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `employee_id` (`employee_id`),
-  KEY `hobby_id` (`hobby_id`),
-  CONSTRAINT `employee_hobby_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `employee` (`id`),
-  CONSTRAINT `employee_hobby_ibfk_2` FOREIGN KEY (`hobby_id`) REFERENCES `hobby` (`id`)
+  KEY `employee_id` (`fk_employee_id`),
+  KEY `hobby_id` (`fk_hobby_id`),
+  CONSTRAINT `employee_hobby_ibfk_1` FOREIGN KEY (`fk_employee_id`) REFERENCES `employee` (`id`),
+  CONSTRAINT `employee_hobby_ibfk_2` FOREIGN KEY (`fk_hobby_id`) REFERENCES `hobby` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
-	
-	/*To insert values in talbe*/
-	INSERT INTO `employee`.`employee` (`first_name`, `last_name`, `age`, `mobile_number`, `address`, `email_address`) VALUES ('siddharth', 'kakadiya', '31', '9725536634', 'ahmedabad', 'sid@gmail.com');
-	
-	INSERT INTO `employee`.`employee` (`first_name`, `last_name`, `age`, `mobile_number`, `address`, `email_address`) VALUES ('akash', 'patel', '28', '9727156891', 'vadodara', 'akash@gmail.com');
-	
-	/*To display all table data*/
-	SELECT * FROM employee.employee;
-	
-	SELECT * FROM employee.employee_salary;
-	
-	SELECT * FROM employee.hobby;
-	
-	SELECT * FROM employee.employee_hobby;
-	
-	/*To display count of having same address*/
-	SELECT address, COUNT(*) FROM employee.employee GROUP BY address;
+/* table column name change	*/
+ALTER TABLE employee.employee_salary CHANGE Date date DATE NOT NULL;
+ALTER TABLE employee.employee_salary CHANGE employee_id fk_employee_id INT NOT NULL;
 
-	/*Update value by first_name*/
-	UPDATE employee.employee SET email_address ='siddharth123@gmail.com' WHERE first_name ='siddharth';
-	UPDATE employee.employee SET email_address ='siddharth789@gmail.com' WHERE first_name ='siddharth';
+/*To insert values in talbe*/
+INSERT INTO `employee`.`employee` (`first_name`, `last_name`, `age`, `mobile_number`, `address`, `email_address`) VALUES ('siddharth', 'kakadiya', '31', '9725536634', 'ahmedabad', 'sid@gmail.com');
 	
-	/*Update value by id*/
-	UPDATE employee.employee SET email_address = 'siddharth@gmail.com' WHERE id = '4';
+INSERT INTO `employee`.`employee` (`first_name`, `last_name`, `age`, `mobile_number`, `address`, `email_address`) VALUES ('akash', 'patel', '28', '9727156891', 'vadodara', 'akash@gmail.com');
 	
-	/*query to get first name and salary */
-	SELECT E.first_name NAME_LIST, S.salary SALARY_LIST FROM employee.employee E NATURAL JOIN employee.employee_salary S WHERE E.id = S.employee_id;
+/*To display all table data*/
+SELECT * FROM employee.employee;
 	
-	/*query to get all employee name, all hobby_name in single column*/
-	SELECT E.first_name AS NAME_AND_HOBBY_LIST FROM employee.employee E UNION SELECT H.hobby_name FROM employee.hobby H;
+SELECT * FROM employee.employee_salary;
+	
+SELECT * FROM employee.hobby;
+	
+SELECT * FROM employee.employee_hobby;
+	
+/*To display count of having same address*/
+SELECT address, COUNT(*) FROM employee.employee GROUP BY address;
+
+/*Update value by first_name*/
+UPDATE employee.employee SET email_address ='siddharth123@gmail.com' WHERE first_name ='siddharth';
+UPDATE employee.employee SET email_address ='siddharth789@gmail.com' WHERE first_name ='siddharth';
+	
+/*Update value by id*/
+UPDATE employee.employee SET email_address = 'siddharth@gmail.com' WHERE id = '4';
+	
+/*query to get first name and salary */
+SELECT E.first_name NAME_LIST, S.salary SALARY_LIST FROM employee.employee E NATURAL JOIN employee.employee_salary S WHERE E.id = S.fk_employee_id;
+	
+/*query to get all employee name, all hobby_name in single column*/
+SELECT E.first_name AS NAME_AND_HOBBY_LIST FROM employee.employee E UNION SELECT H.hobby_name FROM employee.hobby H;
 	
 	
-	SELECT concat(E.first_name,' ' ,H.hobby_name) FROM employee.employee E JOIN employee.hobby H;
-	SELECT E.first_name, H.hobby_name FROM employee.employee E, employee.hobby H;
-	SELECT E.first_name AS NAME_LIST, H.hobby_name AS HOBBY_LIST FROM employee.employee E,employee.hobby H;
-	SELECT E.first_name NAME_LIST, H.hobby_name HOBBY_LIST FROM employee.employee E NATURAL JOIN employee.hobby H;
+/*query to get  employee name, his/her employee_salary */
+SELECT concat(E.first_name,' ' ,E.last_name) AS FULL_NAME, S.salary SALARY_LIST FROM employee.employee E LEFT JOIN employee.employee_salary S ON E.id = S.fk_employee_id;
 	
-	/*query to get  employee name, his/her employee_salary */
-	SELECT E.first_name NAME_LIST, S.salary SALARY_LIST FROM employee.employee E NATURAL JOIN employee.employee_salary S WHERE E.id = S.employee_id;
 	
+/* query to get employee name, total salary of employee, hobby name(comma-separated - you need to use subquery for hobby name)*/
+SELECT CONCAT(E.first_name, ' ', E.last_name) AS FULL_NAME, S.salary SALARY_LIST, (SELECT GROUP_CONCAT(H.hobby_name) AS HOBBIES FROM employee.hobby H JOIN employee.employee_hobby EH ON H.id = EH.fk_hobby_id AND EH.fk_employee_id = E.id GROUP BY E.id) AS HOBBIES FROM employee.employee E LEFT JOIN employee.employee_salary S ON E.id = S.fk_employee_id GROUP BY E.id;
+	
+	
+			
+			
 	/******************************************** Other Practice ********************************************************/
 	
 	
-	KeyWords
+KeyWords
 	
-	SELECT 
-	SELECT * FROM employee.employee;
+SELECT 
+SELECT * FROM employee.employee;
 	
-	Where
-	SELECT * FROM employee.employee WHERE address="ahmedabad";
+Where
+SELECT * FROM employee.employee WHERE address="ahmedabad";
 	
-	And / or
-	SELECT * FROM employee.employee WHERE address="ahmedabad" AND age = '31';
-	SELECT * FROM employee.employee WHERE address="ahmedabad" OR age = '31';
+And / or
+SELECT * FROM employee.employee WHERE address="ahmedabad" AND age = '31';
+SELECT * FROM employee.employee WHERE address="ahmedabad" OR age = '31';
 	
-	Group by
-	SELECT E.address, count(*) AS Total_employee FROM employee.employee E GROUP BY address;
-	SELECT E.age, count(*) AS Total_employee FROM employee.employee E GROUP BY age;
+Group by
+SELECT E.address, count(*) AS Total_employee FROM employee.employee E GROUP BY address;
+SELECT E.age, count(*) AS Total_employee FROM employee.employee E GROUP BY age;
 	
-	HAVING
-	SELECT * FROM employee.employee E HAVING E.age > 27;
+HAVING
+SELECT * FROM employee.employee E HAVING E.age > 27;
 	
-	LIKE
-	SELECT * FROM employee.employee E WHERE E.last_name LIKE 'g%';
-	SELECT * FROM employee.employee E WHERE E.last_name LIKE '%a';
+LIKE
+SELECT * FROM employee.employee E WHERE E.last_name LIKE 'g%';
+SELECT * FROM employee.employee E WHERE E.last_name LIKE '%a';
 	
-	LIMIT
-	SELECT * FROM employee.employee LIMIT 5;
+LIMIT
+SELECT * FROM employee.employee LIMIT 5;
 	
-	ORDER BY
-	SELECT * FROM employee.employee E ORDER BY E.first_name; 
-	SELECT * FROM employee.employee E ORDER BY E.first_name ASC; 
-	SELECT * FROM employee.employee E ORDER BY E.first_name DESC; 
+ORDER BY
+SELECT * FROM employee.employee E ORDER BY E.first_name; 
+SELECT * FROM employee.employee E ORDER BY E.first_name ASC; 
+SELECT * FROM employee.employee E ORDER BY E.first_name DESC; 
 	
-	UNION
-	SELECT E.first_name AS NAME_AND_HOBBY_LIST FROM employee.employee E UNION SELECT H.hobby_name FROM employee.hobby H;
+UNION
+SELECT E.first_name AS NAME_AND_HOBBY_LIST FROM employee.employee E UNION SELECT H.hobby_name FROM employee.hobby H;
 	
-	BETWEEN
-	SELECT * FROM employee.employee E WHERE E.age BETWEEN 27 AND 31;
+BETWEEN
+SELECT * FROM employee.employee E WHERE E.age BETWEEN 27 AND 31;
 	
-	ANY
-	SELECT E.first_name FROM employee.employee E WHERE E.age  = ANY (SELECT E.age FROM employee.employee WHERE E.age = 31);
+ANY
+SELECT E.first_name FROM employee.employee E WHERE E.age  = ANY (SELECT E.age FROM employee.employee WHERE E.age = 31);
 	
-	ALL
-	SELECT E.first_name FROM employee.employee E WHERE E.age  = ALL (SELECT E.id FROM employee.employee E WHERE E.age = 31);
+ALL
+SELECT E.first_name FROM employee.employee E WHERE E.age  = ALL (SELECT E.id FROM employee.employee E WHERE E.age = 31);
 	
-	DISTINCT
-	SELECT DISTINCT E.last_name FROM employee.employee E;
-	SELECT COUNT(DISTINCT E.address) AS unique_states FROM employee.employee E;
-	
-	
-	FUNCTION
-	concat
-	SELECT concat(E.first_name,' ' ,H.hobby_name) FROM employee.employee E JOIN employee.hobby H;
-	SELECT concat(E.first_name,' ' ,E.last_name) AS FULL_NAME FROM employee.employee E;
-	
-	Sum
-	SELECT SUM(E.age) AS TOTAL FROM employee.employee E;
-	
-	UPPER
-	SELECT UPPER(concat(E.first_name,' ' ,E.last_name)) AS FULL_NAME FROM employee.employee E;
-	
-	POWER	
-	SELECT POW(E.id,2) AS POWER FROM employee.employee E;
-	
-	Continue 
-
-	/* table column name change	*/
-	ALTER TABLE employee.employee_salary CHANGE Date date DATE NOT NULL;
+DISTINCT
+SELECT DISTINCT E.last_name FROM employee.employee E;
+SELECT COUNT(DISTINCT E.address) AS unique_states FROM employee.employee E;
 	
 	
+FUNCTION
+concat
+SELECT concat(E.first_name,' ' ,H.hobby_name) FROM employee.employee E JOIN employee.hobby H;
+SELECT concat(E.first_name,' ' ,E.last_name) AS FULL_NAME FROM employee.employee E;
 	
+Sum
+SELECT SUM(E.age) AS TOTAL FROM employee.employee E;
 	
-	SET SQL_SAFE_UPDATES = 0;
+UPPER
+SELECT UPPER(concat(E.first_name,' ' ,E.last_name)) AS FULL_NAME FROM employee.employee E;
+	
+POWER	
+SELECT POW(E.id,2) AS POWER FROM employee.employee E;
+	
+Continue 
+	
+INDEX
+CREATE UNIQUE INDEX  EMAIL_INDEX ON employee.employee(email_address); 
